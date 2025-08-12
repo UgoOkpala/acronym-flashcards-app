@@ -1,0 +1,221 @@
+
+<!-- templates/index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Augo's CompTIA Security+ Flashcards</title>
+    <style>
+        /* --- CSS Reset and Font --- */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+        }
+
+        /* --- Body and Layout --- */
+        body {
+            background-color: #111827; /* Equivalent to bg-gray-900 */
+            color: #ffffff; /* Equivalent to text-white */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 1rem; /* Equivalent to p-4 */
+        }
+
+        /* --- Typography --- */
+        .main-container {
+            width: 100%;
+            max-width: 42rem; /* Equivalent to max-w-2xl */
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 2.25rem; /* text-4xl */
+            line-height: 2.5rem;
+            font-weight: 700; /* font-bold */
+            color: #22d3ee; /* text-cyan-400 */
+            margin-bottom: 0.5rem; /* mb-2 */
+        }
+
+        h2 {
+            font-size: 1.5rem; /* text-2xl */
+            line-height: 2rem;
+            color: #d1d5db; /* text-gray-300 */
+            margin-bottom: 2rem; /* mb-8 */
+        }
+
+        /* --- Flashcard Styling --- */
+        #flashcard {
+            width: 100%;
+            height: 20rem; /* h-80 */
+            perspective: 1000px; /* For the 3D flip effect */
+        }
+
+        .card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+        }
+
+        .is-flipped .card-inner {
+            transform: rotateY(180deg);
+        }
+
+        .card-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            padding: 1.5rem; /* p-6 */
+            border-radius: 0.75rem; /* rounded-xl */
+            border: 2px solid #06b6d4; /* border-2 border-cyan-500 */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            -webkit-backface-visibility: hidden; /* Safari */
+            backface-visibility: hidden;
+        }
+
+        .card-front {
+            background-color: #1f2937; /* bg-gray-800 */
+        }
+
+        .card-back {
+            background-color: #374151; /* bg-gray-700 */
+            transform: rotateY(180deg);
+        }
+
+        #acronym-text {
+            font-size: 3.75rem; /* text-6xl */
+            line-height: 1;
+            font-weight: 700; /* font-bold */
+        }
+
+        #definition-text {
+            font-size: 1.5rem; /* text-2xl */
+            line-height: 2rem;
+            text-align: center;
+        }
+
+        /* --- Controls --- */
+        .controls {
+            margin-top: 2rem; /* mt-8 */
+            display: flex;
+            justify-content: center;
+        }
+        
+        /* space-x-4 equivalent */
+        .controls > * + * {
+            margin-left: 1rem;
+        }
+
+        .btn {
+            color: #111827; /* text-gray-900 */
+            font-weight: 700; /* font-bold */
+            padding: 0.75rem 2rem; /* py-3 px-8 */
+            border-radius: 0.5rem; /* rounded-lg */
+            font-size: 1.125rem; /* text-lg */
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.15s ease-in-out; /* transition-colors */
+        }
+
+        #flip-button {
+            background-color: #06b6d4; /* bg-cyan-500 */
+        }
+
+        #flip-button:hover {
+            background-color: #0891b2; /* hover:bg-cyan-600 */
+        }
+
+        #next-button {
+            background-color: #22c55e; /* bg-green-500 */
+        }
+
+        #next-button:hover {
+            background-color: #16a34a; /* hover:bg-green-600 */
+        }
+
+        /* --- Responsive Adjustments --- */
+        @media (min-width: 768px) { /* md: breakpoint */
+            h1 {
+                font-size: 3rem; /* md:text-5xl */
+                line-height: 1;
+            }
+            h2 {
+                font-size: 1.875rem; /* md:text-3xl */
+                line-height: 2.25rem;
+            }
+            #acronym-text {
+                font-size: 6rem; /* md:text-8xl */
+            }
+            #definition-text {
+                font-size: 1.875rem; /* md:text-3xl */
+                line-height: 2.25rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="main-container">
+        <h1>Augo's CompTIA Security+</h1>
+        <h2>Acronym Flashcards</h2>
+
+        <!-- The Card container -->
+        <div id="flashcard">
+            <div class="card-inner">
+                <!-- Front of the Card -->
+                <div class="card-face card-front">
+                    <p id="acronym-text">{{ acronym }}</p>
+                </div>
+                <!-- Back of the Card -->
+                <div class="card-face card-back">
+                    <p id="definition-text">{{ definition }}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Controls -->
+        <div class="controls">
+            <button id="flip-button" class="btn">
+                Flip
+            </button>
+            <button id="next-button" class="btn">
+                Next
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // --- Client-Side JavaScript ---
+        // This code runs in the user's browser, not on the server.
+
+        const flipButton = document.getElementById('flip-button');
+        const nextButton = document.getElementById('next-button');
+        const flashcard = document.getElementById('flashcard');
+
+        // Event listener for the 'Flip' button
+        flipButton.addEventListener('click', () => {
+            // We just add a CSS class to the card to trigger the animation
+            flashcard.classList.toggle('is-flipped');
+        });
+
+        // Event listener for the 'Next' button
+        nextButton.addEventListener('click', () => {
+            // Reloading the page will cause our Flask app to run again
+            // and serve a new random card.
+            window.location.reload();
+        });
+    </script>
+</body>
+</html>
